@@ -11,12 +11,12 @@ function Home() {
   const status = useSelector((state) => state.post.status);
   const posts = useSelector((state) => state.post.posts);
   const error = useSelector((state) => state.post.error);
+  const loginstatus = useSelector((state) => state.auth.status);
 
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchAllPost());
     }
-
   }, [status, dispatch]);
 
   if (status === "loading") {
@@ -50,7 +50,23 @@ function Home() {
     );
   }
 
-  if (posts?.length === 0) {
+  if (status === "succeeded" && loginstatus === true) {
+    return (
+      <div className="w-full py-8">
+        <Container>
+          <div className="flex flex-wrap">
+            {posts.map((post) => (
+              <div key={post.$id} className="p-2 w-1/4">
+                <PostCard {...post} />
+              </div>
+            ))}
+          </div>
+        </Container>
+      </div>
+    );
+  }
+
+  if (posts?.length === 0 && loginstatus == true) {
     return (
       <div className="w-full py-8 mt-4 text-center">
         <Container>
@@ -65,19 +81,23 @@ function Home() {
       </div>
     );
   }
-  return (
-    <div className="w-full py-8">
-      <Container>
-        <div className="flex flex-wrap">
-          {posts.map((post) => (
-            <div key={post.$id} className="p-2 w-1/4">
-              <PostCard {...post} />
+
+  if (loginstatus == false) {
+    return (
+      <div className="w-full py-8 mt-auto text-center">
+        <Container>
+          <div className="flex">
+            <div className="p-2 w-full">
+              <h1 className="text-2xl text-black font-bold hover:text-gray-500">
+                Login to read posts
+              </h1>
             </div>
-          ))}
-        </div>
-      </Container>
-    </div>
-  );
+          </div>
+        </Container>
+      </div>
+    );
+  }
+
 }
 
 export default Home;
